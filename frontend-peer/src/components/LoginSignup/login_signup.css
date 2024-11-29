@@ -1,0 +1,145 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 600px;
+    margin-top: 50px;
+    background: #fff;
+    padding-bottom: 30px;
+    background: rgba(255, 255, 255, 0.998); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(50%); 
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); 
+    border-radius: 12px; 
+    padding-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.text{
+    color: #03a32b;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.underline{
+    width: 61px;
+    height: 6px;
+    background: #03a32b;
+    border-radius: 9px;
+}
+
+.inputs{
+    margin-top: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.input{
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #e9f9eb;
+    border-radius: 6px;
+    border: #00d13f solid 2px;
+}
+
+.icon{
+    width: 25px;
+    margin: 0px 22px;
+}
+#pas{
+    background-color: #e9f9eb ;
+}
+.input input{
+    height: 50px;
+    width: 400px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #454545;
+    font-size: 22px;
+}
+
+.forgot-password{
+    padding-left: 62px;
+    margin-top: 27px;
+    color: #797979;
+    font-size: 18px;
+}   
+
+
+.forgot-password span{
+    color: #4c00b4;
+    cursor: pointer;
+}
+
+.submit-container{
+    display: flex;
+    gap: 30px;
+    margin: 60px auto;
+}
+
+.submit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #fff;
+    background: #03bc41;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gray{
+    background: #eaeaea;
+    color: #099790;
+}
+
+.submit.gray {
+    background-color: #6c6c6c61; 
+    color: #fdfdfd;
+  }
+  
+  .submit:hover {
+    background-color: #eba428; 
+  }
+  
+  .message {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+  }
+
+  .submit.choose {
+    display: block;
+    margin: 10px auto; 
+    width: fit-content;
+    padding: 10px 50px;
+    border-radius: 20px;
+    background-color: #24c5a8; 
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit.choose:hover {
+    background-color: #00bbff; 
+    padding: 10px 80px;
+  }
