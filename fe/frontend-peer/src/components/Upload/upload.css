@@ -1,0 +1,40 @@
+.upload-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .upload-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .upload-button:hover {
+    background-color: #4589a0;
+  }
+  
+  .upload-message {
+    margin-top: 10px;
+    font-size: 25px;
+    font-weight: bold;
+    color: #04ab0f;
+    animation: zoomIn  0.6s ease-out;
+  }
+  @keyframes zoomIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+  #up{
+    background-color: #43c76d ;
+    width: 60%;
+    height: 25px;
+    font-size: 1.0em;
+    font-weight: bold;
+    color: #ffffff;
+    animation: popIn 0.8s ease-out;
+  }
