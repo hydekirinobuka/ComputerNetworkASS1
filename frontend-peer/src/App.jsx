@@ -6,11 +6,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './views/pages/Home/Home';
 import LoginSignup from './components/LoginSignup/login_signup';
 import axios from 'axios';
-
+// import { useNavigate } from 'react-router-dom';
 axios.defaults.withCredentials = true;
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const peer_id = document.cookie.split('; ').find(row => row.startsWith('peer_id='));
@@ -29,6 +30,7 @@ function App() {
         setTimeout(() => {
           window.location.reload();
         }, 500);
+        // navigate('/signin');
       } else {
         console.error("Failed to logout. Please try again.");
       }

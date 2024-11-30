@@ -1,6 +1,7 @@
 import React from 'react';
 import { Nav, NavLink, NavMenu, Bar, NavBtn, NavBtnLink } from './NavbarEle';
 import logo from '../assets/logoMMT2.png'; 
+import { Link } from 'react-router-dom';
 
 const Navbar = ({ isLoggedIn, handleLogout }) => {
   return (
@@ -22,6 +23,7 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
           <NavBtnLink to="/signin">Sign In</NavBtnLink>
         </NavBtn>
       )}
+      {isLoggedIn && <Link to="/logout">Logout</Link>}
     </Nav>
   );
 };

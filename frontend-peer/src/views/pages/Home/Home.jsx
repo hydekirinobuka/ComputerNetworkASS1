@@ -18,11 +18,11 @@ const Home = () => {
       <h1 className="welcome-message">Welcome to the BKtorrent Website</h1>
       <Connection onConnect={handleConnectionSuccess} />
       {isConnected && (
-        <>
+        <div>
           <p className="connected-message">Connected to P2P Network</p>
           <Upload isConnected={isConnected} />
           <Download />
-        </>
+        </div>
       )}
     </div>
   );
