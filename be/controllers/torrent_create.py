@@ -8,24 +8,28 @@ def generate_pieces(file_path, piece_length):
     pieces_arr = []
     pieces_idx = []
     i = 0
-    # Sử dụng stream của FileStorage để đọc nội dung
-    while True:
-        # Đọc một đoạn với độ dài = piece_length
-        piece = file_path.read(piece_length)
-        if not piece:
-            break
-        # Tạo SHA-1 hash cho piece
-        piece_hash = hashlib.sha1(piece).digest()
-        pieces.append(piece_hash)
-        pieces_arr.append((piece,i))
-        pieces_idx.append(i)
-        i = i + 1
+    try:
+        # Open file in binary mode
+        with open(file_path, 'rb') as file:
+            while True:
+                piece = file.read(piece_length)  # Read a chunk of `piece_length`
+                if not piece:
+                    break
+                piece_hash = hashlib.sha1(piece).digest()  # Compute SHA-1 hash
+                pieces += piece_hash  # Append hash to the binary string
+                pieces_arr.append((piece, i))  # Optional: keep the piece data
+                pieces_idx.append(i)
+                i += 1
 
-    # Nếu cần, có thể quay lại đầu file (nếu file_path là một file thật)
-    file_path.seek(0)
+    except Exception as e:
+        print(f"Error reading file: {e}")
 
-    # Nối tất cả các hash lại thành một chuỗi duy nhất
-    return b''.join(pieces), pieces_arr, pieces_idx
+    return pieces, pieces_arr, pieces_idx
+    # # Nếu cần, có thể quay lại đầu file (nếu file_path là một file thật)
+    # file_path.seek(0)
+
+    # # Nối tất cả các hash lại thành một chuỗi duy nhất
+    # return b''.join(pieces), pieces_arr, pieces_idx
 
 # Cấu trúc info chứa thông tin về file
 def generate_info_hash(file_name, piece_length, pieces, file_length):

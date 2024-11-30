@@ -6,6 +6,9 @@ import socket
 import threading
 from queue import Queue
 import base64
+from werkzeug.security import generate_password_hash, check_password_hash
+
+logging.basicConfig(level=logging.DEBUG)
 
 def get_ip_and_port():
     """
@@ -29,61 +32,59 @@ def get_peer_info(ip, port):
 
 def check_name_exists(name):
     collection = peer.peer_collection()
-    
-    # Tìm kiếm tên trong collection
     peer_data = collection.find_one({"name": name})
-    
-    # Trả về True nếu tên đã tồn tại, ngược lại trả về False
     return peer_data is not None
 
 def sign_up(name, password):
-    if check_name_exists(name):
-        return None, None  # Hoặc có thể trả về một thông điệp lỗi
-    
-    collection = peer.peer_collection()
-    ip, port = get_ip_and_port()
-    
-    data = {
-        "_id": ObjectId(),  # Tạo ObjectId mới
-        "name": name,
-        "password": password,
-        "ip_address": ip,
-        "port": port,
-        "piece_info": [],
-        "status": "inactive"
-    }
+    try:
+        if check_name_exists(name):
+            logging.error(f"Tên {name} đã tồn tại!")
+            return None, None  # Trả về lỗi nếu tên đã tồn tại
+        
+        collection = peer.peer_collection()
+        ip, port = get_ip_and_port()
+        hashed_password = generate_password_hash(password)
+        
+        data = {
+            "_id": ObjectId(),
+            "name": name,
+            "password": hashed_password,
+            "ip_address": ip,
+            "port": port,
+            "piece_info": [],
+            "status": "inactive"
+        }
 
-    # Thêm người dùng vào collection
-    result = collection.insert_one(data)
-
-    return data['ip_address'], data['port']
+        # Thêm người dùng vào cơ sở dữ liệu
+        result = collection.insert_one(data)
+        logging.info(f"Peer {name} signed up successfully with IP: {ip} and port: {port}")
+        return ip, port
+    
+    except Exception as e:
+        logging.error(f"Error in sign_up: {str(e)}")
+        return None, None
 
 def login(name, password):
     collection = peer.peer_collection()
     ip, port = get_ip_and_port()
     # tim user
-    user = collection.find_one(
-        {
-            "name": name,
-            "password": password
-        }
-    )
+    user = collection.find_one({"name": name})
 
-    if user:
-        # Cập nhật thông tin ip và port cho người dùng
-        data = collection.update_one(
+    if user and check_password_hash(user["password"], password):  # Kiểm tra mật khẩu
+        # Cập nhật thông tin IP, cổng và trạng thái đăng nhập
+        collection.update_one(
             {"_id": user["_id"]},
             {
                 "$set": {
-                    "ip_address": ip, # ip, port khi đăng nhập là mới 
+                    "ip_address": ip,  # IP mới khi đăng nhập
                     "port": port,
                     "status": "active"
                 }
-            })
-        if data.modified_count > 0:
-            return True, str(user["_id"]), ip, port
+            }
+        )
+        return True, str(user["_id"]), ip, port
     
-    return False, "", "", ""
+    return False, None, None, None
 
 
 
