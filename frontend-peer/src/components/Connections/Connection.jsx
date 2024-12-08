@@ -2,53 +2,61 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Connection.css';
 
-const Connection = ({ onConnect, isLoggedIn }) => {
-  const [status, setStatus] = useState('');
+const Connection = ({ onConnect, token }) => {
+  const [status, setStatus] = useState('Disconnected');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-  };
-
+  // Check if token is valid whenever the component renders or token changes
   useEffect(() => {
-    if (!isLoggedIn) {
-      setStatus("Disconnected");
+    if (!token) {
+      setStatus("Please log in to initiate the connection.");
+      console.warn("No token available. User must log in.");
     }
-  }, [isLoggedIn]);
+  }, [token]);
 
   const handleConnect = async () => {
-    const peerId = getCookie('peer_id');
-
-    if (!peerId) {
+    if (!token) {
       setStatus("Please log in to initiate the connection.");
       return;
     }
 
+    setIsLoading(true);
     try {
+      // Fetch peer info
       const peerInfoResponse = await axios.get(`http://127.0.0.1:5000/peer/info`, {
-        params: { peer_id: peerId }
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       const { ip_address, port } = peerInfoResponse.data;
 
-      // const response = await axios.post(`http://127.0.0.1:5000/peer/start_peer`, {
-      //   ip_address,
-      //   port,
-      // });
-      
-      setStatus(`Connected successfully from IP: ${ip_address} on Port: ${port}`);
-      
-      if (onConnect) onConnect();
+      // Start the peer connection
+      const startPeerResponse = await axios.post(
+        `http://127.0.0.1:5000/peer/start_peer`,
+        { ip_address, port },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
+      setStatus(`Connected successfully: ${startPeerResponse.data.status}`);
+      console.log("Connection successful:", startPeerResponse.data);
+
+      if (onConnect) onConnect();
     } catch (error) {
+      console.error("Error during connection:", error);
       setStatus(error.response?.data?.error || "Failed to connect to the P2P network.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="connection-container">
-      <button className="connection-button" onClick={handleConnect}>Connect to P2P Network</button>
+      <button
+        className="connection-button"
+        onClick={handleConnect}
+        disabled={isLoading}
+      >
+        {isLoading ? "Connecting..." : "Connect to P2P Network"}
+      </button>
       {status && <p className="connection-status">{status}</p>}
     </div>
   );

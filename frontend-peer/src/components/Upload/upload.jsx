@@ -1,20 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './upload.css';
-// import { useNavigate } from 'react-router-dom';
-
-axios.defaults.withCredentials = true;
-
-const getCookieValue = (name) => {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? match[2] : null;
-};
 
 const Upload = ({ isConnected }) => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
-  const [isUploaded, setIsUploaded] = useState(false); // Track upload success status
-  // const navigate = useNavigate();
+  const [isUploaded, setIsUploaded] = useState(false); 
   const [isError, setIsError] = useState(false);
 
   const handleFileChange = (e) => {
@@ -35,20 +26,21 @@ const Upload = ({ isConnected }) => {
       return;
     }
 
-    const peerId = getCookieValue("peer_id");
-    if (!peerId) {
-      setMessage("Bạn cần phải đăng nhập trước khi upload.");
+    // Get token from localStorage
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setMessage("You need to log in before uploading.");
       setIsError(true);
       return;
     }
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('peer_id', peerId); 
 
     try {
       const response = await axios.post('http://127.0.0.1:5000/tracker/uploading', formData, {
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
         withCredentials: true,
@@ -61,11 +53,12 @@ const Upload = ({ isConnected }) => {
       setMessage(error.response?.data?.error || "Failed to upload file.");
       setIsError(true);
     }
-    
   };
+
   const handleRedirect = () => {
-    window.open('http://localhost:3001', '_blank');// Redirect to frontend-tracker
+    window.open('http://localhost:3001', '_blank'); // Redirect to frontend-tracker
   };
+
   return (
     <div className="upload-container">
       <h2>Upload File</h2>
@@ -82,11 +75,11 @@ const Upload = ({ isConnected }) => {
         </div>
       )}
       <div className="Magnet">
-          <p>Get MagnetLink Below</p>
-          <button onClick={handleRedirect} className="redirect-button">
-            Go to Frontend-Tracker
-          </button>
-        </div>
+        <p>Get MagnetLink Below</p>
+        <button onClick={handleRedirect} className="redirect-button">
+          Go to Frontend-Tracker
+        </button>
+      </div>
     </div>
   );
 };

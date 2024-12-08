@@ -56,6 +56,7 @@ const ListPeer = () => {
         {currentPeers.map((peer, index) => (
           <li key={index} className="peer-item">
             <p><strong>Tên:</strong> {peer.name}</p>
+            <p><strong>ID:</strong> {peer.id}</p>
             <p><strong>Địa chỉ IP:</strong> {peer.ip_address}</p>
             <p><strong>Cổng:</strong> {peer.port}</p>
             <p><strong>Trạng thái:</strong> {peer.status}</p>

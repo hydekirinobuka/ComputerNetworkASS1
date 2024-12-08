@@ -4,8 +4,7 @@ import Connection from '../../../components/Connections/Connection';
 import Upload from '../../../components/Upload/upload';
 import Download from '../../../components/Download/download';
 
-
-const Home = () => {
+const Home = ({ token }) => {
 
   const [isConnected, setIsConnected] = useState(false);
 
@@ -16,7 +15,7 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1 className="welcome-message">Welcome to the BKtorrent Website</h1>
-      <Connection onConnect={handleConnectionSuccess} />
+      <Connection token={token} onConnect={handleConnectionSuccess} />
       {isConnected && (
         <div>
           <p className="connected-message">Connected to P2P Network</p>

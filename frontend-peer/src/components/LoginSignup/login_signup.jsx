@@ -8,7 +8,7 @@ import password_icon from '../assets/password.png';
 
 axios.defaults.withCredentials = true;
 
-const LoginSignup = ({ setIsLoggedIn }) => {
+const LoginSignup = ({ setIsLoggedIn, setToken }) => {
   const [action, setAction] = useState("Login");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -17,22 +17,35 @@ const LoginSignup = ({ setIsLoggedIn }) => {
 
   const handleSubmit = async () => {
     const url = action === "Login" ? "http://127.0.0.1:5000/peer/login" : "http://127.0.0.1:5000/peer/sign_up";
+
+    if (!name || !password) {
+      setMessage("Name and password are required!");
+      return;
+    }
+
+    if (action === "Sign Up" && password.length < 8) {
+      setMessage("Password must be at least 8 characters long.");
+      return;
+    }
+
     try {
-      const response = await axios.post(url, { name, password }, { headers: { 'Content-Type': 'application/json' } });
-      if (response.status === 201) {
-        setMessage(response.data.message);
-        if (action === "Login") {
-          document.cookie = `peer_id=${response.data.peer_id}; path=/`;
-          setIsLoggedIn(true);
-          setTimeout(() => {
-            navigate('/');
-          }, 1000);
-        }
+      const response = await axios.post(url, { name, password }, { headers: { "Content-Type": "application/json" } });
+
+      setMessage(response.data.message);
+
+      if (action === "Login") {
+        const { access_token } = response.data;
+        localStorage.setItem("access_token", access_token); // Store the JWT
+        setToken(access_token); // Update token state
+        setIsLoggedIn(true);
+        navigate("/");
       }
     } catch (error) {
-      setMessage(error.response ? error.response.data.error || error.response.data.message : "Something went wrong!");
+      setMessage(error.response?.data?.error || "Something went wrong!");
     }
   };
+
+
 
   return (
     <div className='container'>

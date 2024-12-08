@@ -8,25 +8,25 @@ const Download = () => {
 
   const handleDownload = async () => {
     if (!magnetLink) {
-      setMessage("Vui lòng nhập magnet link để tải xuống.");
+      setMessage("Please enter a magnet link to download.");
+      return;
+    }
+
+    // Get token from localStorage
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setMessage("You need to log in before connecting to a peer.");
       return;
     }
 
     try {
-      const peerId = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('peer_id='))
-        ?.split('=')[1];
-      if (!peerId) {
-        setMessage("Bạn cần phải đăng nhập trước khi kết nối tới peer.");
-        return;
-      }
       const encodedMagnet = encodeURIComponent(magnetLink);
       const response = await axios.post(
         `http://127.0.0.1:5000/tracker/downloading/${encodedMagnet}`,
         {}, 
         {
           headers: {
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           withCredentials: true
@@ -45,12 +45,12 @@ const Download = () => {
         link.click();
         link.remove();
 
-        setMessage("File đã sẵn sàng để tải về.");
+        setMessage("File is ready to download.");
       } else {
-        setMessage("Không thể tải file.");
+        setMessage("Failed to download file.");
       }
     } catch (error) {
-      setMessage("Không thể tải file.");
+      setMessage("Failed to download file.");
     }
   };
 
@@ -59,7 +59,7 @@ const Download = () => {
       <h2>Download File</h2>
       <input
         type="text"
-        placeholder="Nhập magnet link"
+        placeholder="Enter magnet link"
         value={magnetLink}
         onChange={(e) => setMagnetLink(e.target.value)}
         className="download-input"
