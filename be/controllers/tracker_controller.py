@@ -1,8 +1,10 @@
 from models import peer, file, torrent
-from controllers import torrent_create, torrent_controller, peer_controller
+from controllers import torrent_create , torrent_controller, peer_controller
 from bson import ObjectId
 import bencodepy
 import hashlib
+from werkzeug.datastructures import FileStorage
+from io import BytesIO
 
 def get_num_peer_active(peer_list):
     num = 0
@@ -91,32 +93,78 @@ def add_peer_to_file(torrent, peer_id, pieces_idx):
     else:
         print("File with the given metainfo_id not found.")
 
-def upload_file(file_path, peer_id):
+# def upload_file(file_path, peer_id):
+#     try:
+#         pieces, pieces_arr, pieces_idx = torrent_create.generate_pieces(file_path, 512000)
+#         # Các bước hình thành magnetext và metainfo của files
+#         file_path.seek(0)
+#         file_path.seek(0, 2) # seeks the end of the file
+#         file_length = file_path.tell() # tell at which byte we are
+#         file_path.seek(0, 0) # go back to the beginning of the file
+
+#         output_file = f"{file_path.filename}.torrent"
+
+#         # optional
+#         info_hash = torrent_create.generate_info_hash(file_path.filename, 512000, pieces, file_length)
+#         magnet_link = torrent_create.create_magnet_link(info_hash)
+#         torrent_create.create_encode_magnet_link_file(magnet_link)
+
+#         torrent_create.create_torrent_file(file_path.filename, 512000, pieces, file_length, output_file)
+#         metainfo_id = add_torrent_to_db(output_file)
+
+#         file_collection = file.file_collection()
+#         file_data = {
+#             "file_name": file_path.filename,
+#             "metainfo_id": metainfo_id,
+#             "peers_info": []
+#         }
+
+#         # Thêm peer_id vào mảng peer_ids
+#         peer_info = {
+#             "peer_id": ObjectId(peer_id),
+#             "pieces": pieces_idx
+#         }
+#         file_data["peers_info"].append(peer_info)
+#         # Thên file vào collection file
+#         file_collection.insert_one(file_data)
+
+#         # Thêm file vào field shared_files của peer
+#         update_peer_shared_files(peer_id, metainfo_id, pieces_arr)
+
+#         return True
+#     except Exception as e:
+#         print(f"Error uploading file: {e}")
+#         return False
+def upload_file(file_storage: FileStorage, peer_id: str):
     try:
-        pieces, pieces_arr, pieces_idx = torrent_create.generate_pieces(file_path, 512000)
-        # Các bước hình thành magnetext và metainfo của files
-        file_path.seek(0)
-        file_path.seek(0, 2) # seeks the end of the file
-        file_length = file_path.tell() # tell at which byte we are
-        file_path.seek(0, 0) # go back to the beginning of the file
+        piece_length = 512000
+        pieces, pieces_arr, pieces_idx = torrent_create.generate_pieces(file_storage, piece_length)
+        file_storage.seek(0, 2) 
+        file_length = file_storage.tell()  
+        file_storage.seek(0, 0) 
 
-        output_file = f"{file_path.filename}.torrent"
+        # Tên tệp torrent đầu ra
+        output_file = f"{file_storage.filename}.torrent"
 
-        # optional
-        info_hash = torrent_create.generate_info_hash(file_path.filename, 512000, pieces, file_length)
+        # Tạo info_hash, liên kết magnet và tạo tệp torrent
+        info_hash = torrent_create.generate_info_hash(file_storage.filename, piece_length, pieces, file_length)
         magnet_link = torrent_create.create_magnet_link(info_hash)
+
+        # Lưu liên kết magnet vào một tệp (tuỳ chọn)
         torrent_create.create_encode_magnet_link_file(magnet_link)
 
-        torrent_create.create_torrent_file(file_path.filename, 512000, pieces, file_length, output_file)
+        # Tạo tệp torrent
+        torrent_create.create_torrent_file(file_storage, file_storage.filename, piece_length, pieces, file_length, output_file)
+
+        # Thêm metadata torrent vào cơ sở dữ liệu
         metainfo_id = add_torrent_to_db(output_file)
 
-        file_collection = file.file_collection()
+        # Thêm dữ liệu tệp vào bộ sưu tập
         file_data = {
-            "file_name": file_path.filename,
+            "file_name": file_storage.filename,
             "metainfo_id": metainfo_id,
-            "peers_info": []
+            "peers_info": [],
         }
-
         # Thêm peer_id vào mảng peer_ids
         peer_info = {
             "peer_id": ObjectId(peer_id),
@@ -124,12 +172,16 @@ def upload_file(file_path, peer_id):
         }
         file_data["peers_info"].append(peer_info)
         # Thên file vào collection file
+        file_collection = file.file_collection()  
         file_collection.insert_one(file_data)
 
-        # Thêm file vào field shared_files của peer
         update_peer_shared_files(peer_id, metainfo_id, pieces_arr)
-
         return True
+
+    except Exception as e:
+        print(f"Error uploading file: {e}")
+        return False
+
     except Exception as e:
         print(f"Error uploading file: {e}")
         return False
