@@ -1,4 +1,3 @@
-
 import base64
 from models import torrent, file, peer
 from bson import ObjectId
@@ -6,15 +5,18 @@ import hashlib
 import os
 
 def decode_magnet_link(magnet_link):
+    # Kiểm tra xem magnet link có bắt đầu bằng 'magnet:?xt=urn:btih:' không
     if not magnet_link.startswith("magnet:?xt=urn:btih:"):
         return None
 
-    info_hash = magnet_link[20:]  # Skip 'magnet:?xt=urn:btih:'
-    if len(info_hash) != 40:  # Ensure it's a valid SHA-1 hash length
+    # Tách phần info_hash ngay sau 'magnet:?xt=urn:btih:'
+    info_hash = magnet_link[20:]  # Bỏ qua 'magnet:?xt=urn:btih:'
+    
+    # Đảm bảo info_hash có độ dài hợp lệ (thường là 40 ký tự hex cho SHA-1 hash)
+    if len(info_hash) != 40:
         return None
-
+    
     return info_hash
-
 
 def get_torrent(magnet_link):
     info_hash = decode_magnet_link(magnet_link)
@@ -102,32 +104,13 @@ def encode_list_to_base64(byte_list):
 def decode_list_from_base64(base64_list):
     return [base64.b64decode(b64_str) for b64_str in base64_list]
 
-
 def combine_pieces(pieces, output_file_name):
-    # Decode list of pieces from Base64 if necessary
-    decoded_pieces = []
-    for piece in pieces:
-        try:
-            # Base64 decoding
-            binary_data = base64.b64decode(piece["piece"])
-            decoded_pieces.append(binary_data)
-        except Exception as e:
-            print(f"Error decoding piece: {e}. Skipping this piece.")
-            continue  # Skip this piece and move to the next
+    pieces = decode_list_from_base64(pieces)
+    if not os.path.exists("C:\\Downloads"):
+        os.makedirs("C:\\Downloads")
+    output_file_path = os.path.join("C:\\Downloads", output_file_name)
+    with open(output_file_path, 'wb') as outfile:
+        for piece in pieces:
+            outfile.write(piece)
 
-    # Prepare output directory
-    download_dir = "C:\\Downloads"
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-    
-    output_file_path = os.path.join(download_dir, output_file_name)
-    
-    # Combine pieces into a single file
-    try:
-        with open(output_file_path, 'wb') as outfile:
-            for data in decoded_pieces:
-                outfile.write(data)
-
-        print(f"File downloaded successfully to {output_file_path}")
-    except Exception as e:
-        print(f"Error writing to file: {e}")
+    print(f"File downloaded successfully to {output_file_path}")

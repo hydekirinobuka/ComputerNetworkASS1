@@ -268,7 +268,7 @@ def get_new_piece(magnet_link, peer_id):
     if not available_pieces:
         add_peer_to_file(torrent_data, peer_id, pieces_index)
 
-    pieces = peer_controller.request_piece_from_peers(peer_list, pieces_index, torrent_data, available_pieces)
+    pieces = peer_controller.request_pieces_from_peers(peer_list, pieces_index, torrent_data, available_pieces)
 
     pieces_arr = []
 
@@ -276,12 +276,15 @@ def get_new_piece(magnet_link, peer_id):
         pieces_arr.append((pieces[i], i))
 
     pieces = peer_controller.get_total_piece_available(pieces, peer_id, str(torrent_data["_id"]))
-    
+
     if not available_pieces:
         update_peer_shared_files(peer_id, str(torrent_data["_id"]), pieces_arr)
         
     output_file = torrent_data['info']['name']
 
-    pieces = torrent_controller.encode_list_to_base64(pieces)
+    if pieces:
+        pieces = torrent_controller.encode_list_to_base64(pieces)
+
     return pieces, output_file
+
 
