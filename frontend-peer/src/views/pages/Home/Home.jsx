@@ -13,17 +13,17 @@ const Home = ({ token }) => {
   };
 
   return (
-    <div className="home-container">
-      <h1 className="welcome-message">Welcome to the BKtorrent Website</h1>
-      <Connection token={token} onConnect={handleConnectionSuccess} />
-      {isConnected && (
-        <div>
-          <p className="connected-message">Connected to P2P Network</p>
-          <Upload isConnected={isConnected} />
-          <Download />
-        </div>
-      )}
-    </div>
+      <div className="home-container">
+        <h1 className="welcome-message">Welcome to My Group STA </h1>
+        <Connection token={token} onConnect={handleConnectionSuccess} />
+        {isConnected && (
+          <div>
+            <p className="connected-message">Connected to P2P Network</p>
+            <Upload isConnected={isConnected} />
+            <Download />
+          </div>
+        )}
+      </div>
   );
 };
 

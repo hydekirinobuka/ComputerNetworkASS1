@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Peer Tracker</h1>
+        <h1>Welcome to Tracker Home</h1>
       </header>
       <main>
         <Home />

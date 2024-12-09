@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './search.css';
-
 const Search = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);

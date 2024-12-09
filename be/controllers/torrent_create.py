@@ -73,7 +73,7 @@ def create_encode_magnet_link_file(magnet_link):
 def create_torrent_file(file_storage: FileStorage, file_name, piece_length, pieces, file_length, output_file):
     torrent_data = {
         "info": {
-            "name": file_name,
+            "name": file_name.encode(),
             "piece length": piece_length,
             "pieces": pieces,
             "length": file_length

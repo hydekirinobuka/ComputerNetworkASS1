@@ -9,7 +9,7 @@ const Connection = ({ onConnect, token }) => {
   // Check if token is valid whenever the component renders or token changes
   useEffect(() => {
     if (!token) {
-      setStatus("Please log in to initiate the connection.");
+      setStatus("Please login to make connection");
       console.warn("No token available. User must log in.");
     }
   }, [token]);

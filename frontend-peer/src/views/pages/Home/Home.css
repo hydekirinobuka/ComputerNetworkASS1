@@ -4,21 +4,25 @@
   padding: 80px;
   max-width: 800px;
   border-radius: 10px;
-  background: linear-gradient(95deg, #d09e20, #f8e1e1);
+  /* background: linear-gradient(95deg, #d09e20, #f8e1e1); */
   /* background: #ddfde8e2; */
   box-shadow: 5px 8px 12px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.2); /* Màu nền mờ với độ trong suốt */
+  backdrop-filter: blur(10px); /* Tạo hiệu ứng mờ */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  align-items: center;
 }
 
 .welcome-message {
   font-size: 2.5em;
-  color: #ffffff;
+  color: #04bc4a;
   margin-bottom: 20px;
   animation: fadeIn 1.5s ease-out;
 }
 
 .connected-message, .connection-status {
   font-size: 1.2em;
-  color: #2c8a54;
+  color: #13a150;
   animation: popIn 0.8s ease-out;
 }
 

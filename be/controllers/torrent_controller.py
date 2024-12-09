@@ -108,11 +108,12 @@ def combine_pieces(pieces, output_file_name):
     decoded_pieces = []
     for piece in pieces:
         try:
+            # Base64 decoding
             binary_data = base64.b64decode(piece["piece"])
             decoded_pieces.append(binary_data)
         except Exception as e:
-            print(f"Error decoding piece: {e}")
-            return
+            print(f"Error decoding piece: {e}. Skipping this piece.")
+            continue  # Skip this piece and move to the next
 
     # Prepare output directory
     download_dir = "C:\\Downloads"
